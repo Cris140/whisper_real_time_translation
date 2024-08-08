@@ -1,7 +1,6 @@
 import argparse
 import io
 import speech_recognition as sr
-import torch
 from datetime import datetime, timedelta
 from queue import Queue
 from tempfile import NamedTemporaryFile
@@ -10,7 +9,7 @@ from sys import platform
 from faster_whisper import WhisperModel
 from TranscriptionWindow import TranscriptionWindow
 import os
-os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 def main():
     
@@ -123,9 +122,12 @@ def main():
                 text = ""
                 translate = args.translate
                 
-                # Use Whisper to transcribe and translate (if specified)
-                segments, info = audio_model.transcribe(temp_file, language=args.input_lang, task="translate" if translate else "transcribe", target_lang=args.translate_lang if translate else None)
-                
+                # Use Whisper to transcribe (and translate if specified)
+                if translate:
+                    segments, info = audio_model.transcribe(temp_file, language=args.input_lang, task="translate")
+                else:
+                    segments, info = audio_model.transcribe(temp_file, language=args.input_lang)
+
                 for segment in segments:
                     text += segment.text
 
