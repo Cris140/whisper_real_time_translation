@@ -15,7 +15,7 @@ def main():
     
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default="medium", help="Model to use",
-                        choices=["tiny", "base", "small", "medium", "large"])
+                        choices=["tiny", "base", "small", "medium", "large", "large-v3"])
     parser.add_argument("--device", default="auto", help="Device to use for CTranslate2 inference",
                         choices=["auto", "cuda", "cpu"])
     parser.add_argument("--compute_type", default="auto", help="Type of quantization to use",
