@@ -17,15 +17,16 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default="medium", help="Model to use",
                         choices=["tiny", "base", "small", "medium", "large"])
-    parser.add_argument("--device", default="auto", help="device to user for CTranslate2 inference",
+    parser.add_argument("--device", default="auto", help="Device to use for CTranslate2 inference",
                         choices=["auto", "cuda", "cpu"])
     parser.add_argument("--compute_type", default="auto", help="Type of quantization to use",
                         choices=["auto", "int8", "int8_float16", "float16", "int16", "float32"])
     parser.add_argument("--input_lang", default='en', help="Language of the input audio.", type=str)
     parser.add_argument("--non_english", action='store_true',
                         help="Don't use the English model.")
+    parser.add_argument("--translate_lang", default="en", help="Language to translate the transcription into.", type=str)
     parser.add_argument("--translate", action='store_true',
-                        help="Translate the transcription to English.")
+                        help="Translate the transcription to the specified language.")
     parser.add_argument("--threads", default=0,
                         help="Number of threads used for CPU inference", type=int)
     parser.add_argument("--energy_threshold", default=1000,
@@ -123,7 +124,7 @@ def main():
                 translate = args.translate
                 
                 # Use Whisper to transcribe and translate (if specified)
-                segments, info = audio_model.transcribe(temp_file, language=args.input_lang, task="translate" if translate else "transcribe")
+                segments, info = audio_model.transcribe(temp_file, language=args.input_lang, task="translate" if translate else "transcribe", target_lang=args.translate_lang if translate else None)
                 
                 for segment in segments:
                     text += segment.text
@@ -136,7 +137,7 @@ def main():
                 
                 # Update the window only if the text has changed
                 if result != last_displayed_text:
-                    window.update_text([result], args.input_lang if not translate else "English")
+                    window.update_text([result], args.translate_lang if translate else args.input_lang)
                     last_displayed_text = result
                 
                 sleep(0.25)
